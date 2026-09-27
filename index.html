@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Practice Test 9</title>
+<style>
+  :root {
+    --ink: #1b2a41;
+    --ink-soft: #55627a;
+    --line: #d8dde6;
+    --paper: #ffffff;
+    --field: #f3f5f8;
+    --pitch: #2e7d4f;
+    --pitch-deep: #23603c;
+    --correct: #1e8e5a;
+    --wrong: #c43d3d;
+    --correct-bg: #e6f5ec;
+    --wrong-bg: #fbe9e9;
+    --amber: #b8860b;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--field); color: var(--ink);
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; font-size: 17px; line-height: 1.5; }
+
+  header {
+    background: var(--ink); color: #fff; position: sticky; top: 0; z-index: 5;
+  }
+  .bar { max-width: 960px; margin: 0 auto; padding: 12px 24px; display: flex; align-items: center; gap: 20px; }
+  .bar .title { font-weight: 600; }
+  .bar .section-name { color: #c6d0e0; }
+  .bar .spacer { flex: 1; }
+
+  main { max-width: 960px; margin: 28px auto 80px; padding: 0 24px; }
+  .sheet { background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 32px 40px; }
+  h1 { font-size: 28px; margin: 0 0 6px; font-weight: 700; }
+  h2 { font-size: 22px; margin: 0 0 16px; font-weight: 700; }
+  p.lead { color: var(--ink-soft); margin: 0 0 20px; }
+
+  .instructions ol { padding-left: 22px; }
+  .instructions li { margin-bottom: 6px; }
+  .plan { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 22px 0 28px; }
+  .plan div { border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px; }
+  .plan strong { display: block; margin-bottom: 4px; }
+  .plan span { color: var(--ink-soft); font-size: 15px; }
+
+  button.primary {
+    background: var(--pitch); color: #fff; border: 0; border-radius: 6px; font-size: 17px; font-weight: 600;
+    padding: 12px 26px; cursor: pointer; font-family: inherit;
+  }
+  button.primary:hover { background: var(--pitch-deep); }
+  button.primary:focus-visible, .option:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
+
+  /* passage + questions */
+  .two-col { display: grid; grid-template-columns: 5fr 6fr; gap: 40px; align-items: start; }
+  .passage { position: sticky; top: 76px; }
+  .passage-note { margin: 0 0 14px; font-style: italic; color: var(--ink-soft); }
+
+  .question { margin-bottom: 32px; padding-bottom: 28px; border-bottom: 1px solid var(--line); }
+  .question:last-of-type { border-bottom: 0; }
+  .qhead { display: flex; gap: 12px; align-items: baseline; margin-bottom: 12px; }
+  .qnum { font-weight: 700; min-width: 26px; }
+  .stem { margin: 0; }
+  .stem em.speaker { font-style: normal; font-weight: 600; }
+  .stem .facts { margin: 8px 0 0 0; padding-left: 20px; }
+  .stem .facts li { margin: 2px 0; }
+  .stem .quote { margin: 10px 0 0 0; padding: 10px 14px; background: var(--field); border-left: 3px solid var(--line); border-radius: 0 4px 4px 0; }
+  .options { display: grid; gap: 8px; margin: 14px 0 0 38px; }
+  .option {
+    display: flex; gap: 14px; align-items: flex-start; text-align: left; width: 100%;
+    background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 10px 14px;
+    cursor: pointer; font: inherit; color: inherit;
+  }
+  .option:hover { border-color: var(--ink-soft); }
+  .option .letter { flex: 0 0 28px; height: 28px; border-radius: 50%; border: 2px solid var(--ink);
+    display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+  .option.selected { border-color: var(--ink); background: #eef2f8; }
+  .option.selected .letter { background: var(--ink); color: #fff; }
+
+  .submit-row { display: flex; align-items: center; gap: 16px; margin-top: 8px; }
+  .submit-row .status { color: var(--ink-soft); font-size: 15px; }
+
+
+  /* prose passage */
+  .prose { font-family: Georgia, "Times New Roman", serif; font-size: 17px; line-height: 1.6; }
+  .prose h3 { font-family: inherit; font-size: 22px; margin: 0 0 14px; font-weight: 700; }
+  .prose p { margin: 0 0 12px; }
+  .passage { max-height: calc(100vh - 100px); overflow-y: auto; padding-right: 8px; }
+
+
+  /* poem passage */
+  .poem { font-size: 17px; line-height: 1.6; }
+  .poem .stanza { margin: 0 0 18px; position: relative; padding-left: 32px; }
+  .poem .stanza .vn { position: absolute; left: 0; top: 1px; font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 13px; color: var(--ink-soft); }
+  .poem .stanza .line { display: block; }
+
+
+
+  /* letter-only options and shared option lists */
+  .options.letters { grid-template-columns: repeat(5, 54px); gap: 10px; }
+  .options.letters .option { justify-content: center; padding: 9px; }
+  .choice-list { border: 1px solid var(--line); border-radius: 6px; padding: 14px 18px; margin: 0 0 26px; }
+  .choice-list ol { list-style: none; margin: 0; padding: 0; }
+  .choice-list li { display: flex; gap: 12px; margin-bottom: 8px; }
+  .choice-list li:last-child { margin-bottom: 0; }
+  .choice-list .letter { flex: 0 0 26px; height: 26px; border-radius: 50%; border: 2px solid var(--ink);
+    display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; }
+
+
+  /* multi-extract passage */
+  .extract { margin: 0 0 16px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 6px; }
+  .extract h4 { font-family: "Segoe UI", Arial, sans-serif; font-size: 14px; margin: 0 0 6px; letter-spacing: .02em; }
+  .extract p { margin: 0; font-size: 16px; line-height: 1.55; }
+  .options.letters.four { grid-template-columns: repeat(4, 54px); }
+
+  /* cloze gaps */
+  .gap { color: var(--ink-soft); }
+  .gap.filled { color: var(--ink); font-weight: 600; background: #eef2f8; box-shadow: inset 0 -2px 0 var(--pitch); }
+  .gap.filled.correct { color: var(--correct); background: var(--correct-bg); box-shadow: inset 0 -2px 0 var(--correct); }
+
+  /* data tables inside stems */
+  table.grid { border-collapse: collapse; margin: 10px 0 0; font-size: 16px; }
+  table.grid th, table.grid td { border: 1px solid var(--ink); padding: 5px 14px; text-align: left; }
+  table.grid th { background: var(--field); font-weight: 600; }
+
+  /* visual (picture) options */
+  .options.visual { grid-template-columns: repeat(auto-fit, minmax(0, max-content)); gap: 14px; }
+  .options.visual .option { flex-direction: column; align-items: center; gap: 8px; padding: 10px; }
+  .options.visual .option .letter { flex: none; width: 28px; height: 28px; }
+  .options.visual .option svg { display: block; }
+  @media (max-width: 760px) { .options.visual { grid-template-columns: repeat(2, max-content); } }
+
+
+  /* v7 additions */
+  .stem .note { margin: 0 0 8px; font-style: italic; color: var(--ink-soft); font-size: 15px; }
+  .stem ol.statements { margin: 10px 0 0; padding-left: 26px; }
+  .stem ol.statements li { margin: 4px 0; padding-left: 4px; }
+  .figure { margin: 12px 0; }
+  .figure svg { display: block; max-width: 100%; height: auto; }
+  .option svg { display: block; max-width: 100%; height: auto; }
+  .option:has(svg) { align-items: center; }
+  .digit-cards { display: flex; gap: 22px; flex-wrap: wrap; margin: 12px 0 14px; }
+  .digit-card { width: 80px; height: 106px; border: 1.5px solid var(--ink); border-radius: 10px; background: #fdf3e1;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .digit-card span { font-size: 56px; font-weight: 700; line-height: 1; }
+  .digit-card small { font-size: 12px; margin-top: 6px; letter-spacing: .03em; }
+  .table-wrap { overflow-x: auto; max-width: 100%; }
+  @media (max-width: 760px) { table.grid th, table.grid td { padding: 4px 8px; font-size: 14px; } }
+  .poem .stanza .line { padding-left: 1.2em; text-indent: -1.2em; }
+  .tags { display: flex; gap: 16px; flex-wrap: wrap; margin: 12px 0 14px; }
+  .tag { border: 1.5px solid var(--ink); border-radius: 8px 22px 22px 8px; padding: 8px 22px 8px 14px; background: #fdf3e1;
+    display: flex; flex-direction: column; min-width: 96px; }
+  .tag small { font-size: 13px; color: var(--ink-soft); }
+  .tag span { font-size: 22px; font-weight: 700; }
+  .explain .skill { margin: 0 0 8px; font-size: 14px; font-weight: 600; color: var(--ink-soft); }
+
+  /* review */
+  .result-line { display: flex; gap: 10px; align-items: center; font-weight: 600; margin-bottom: 10px; }
+  .badge { padding: 2px 10px; border-radius: 4px; font-size: 14px; }
+  .badge.ok { background: var(--correct-bg); color: var(--correct); }
+  .badge.no { background: var(--wrong-bg); color: var(--wrong); }
+  .option.is-correct { border-color: var(--correct); background: var(--correct-bg); }
+  .option.is-correct .letter { border-color: var(--correct); background: var(--correct); color: #fff; }
+  .option.is-wrong { border-color: var(--wrong); background: var(--wrong-bg); }
+  .option.is-wrong .letter { border-color: var(--wrong); background: var(--wrong); color: #fff; }
+  .option[disabled] { cursor: default; }
+  .explain { margin: 14px 0 0 38px; padding: 14px 16px; background: var(--field); border-radius: 6px; font-size: 16px; }
+  .explain p { margin: 0 0 8px; }
+  .explain p:last-child { margin: 0; }
+  .explain .why-not { color: var(--ink-soft); }
+
+  .section-score { font-size: 18px; margin: 0 0 24px; }
+  .section-score b { font-size: 26px; }
+
+  /* final */
+  .final-score { text-align: center; padding: 20px 0 10px; }
+  .final-score .big { font-size: 64px; font-weight: 700; line-height: 1; }
+  .final-score .of { color: var(--ink-soft); font-size: 20px; }
+  .breakdown { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 26px 0 30px; }
+  .breakdown div { border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px; }
+  .breakdown strong { display: block; font-size: 24px; }
+  .breakdown span { color: var(--ink-soft); font-size: 15px; }
+  .verdict { margin: 0 0 24px; }
+  .center { text-align: center; }
+
+  @media (max-width: 760px) {
+    .two-col { grid-template-columns: 1fr; }
+    .passage { position: static; }
+    .plan, .breakdown { grid-template-columns: 1fr; }
+    .sheet { padding: 22px; }
+    .options, .explain { margin-left: 0; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .option { transition: background .12s, border-color .12s; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <span class="title">Practice Test 9</span>
+    <span class="section-name" id="hdr-section"></span>
+    <span class="spacer"></span>
+  </div>
+</header>
+<main id="app"></main>
+
+<script>
+/* ---------------------------------------------------------------
+   TEST CONTENT
+   Each section: name, optional passage, questions[].
+   Question: stem (HTML), options[] (HTML allowed), answer (index),
+   explain (HTML), skill (text), optional visualOptions / letterOptions.
+   --------------------------------------------------------------- */
+
+let passMode = "answer";
+const INK = "#1b2a41";
+
+/* ---- Reading: poem ---- */
+const POEM_VERSES = [
+  ["All afternoon the heat lay on our street",
+   "the way a dog lies across a doorway:",
+   "too heavy to shift, too tired to care",
+   "who had to step around it."],
+  ["The footpaths shimmered. The tar went soft.",
+   "The cicadas sawed and sawed at the air",
+   "as if they could cut a hole in it",
+   "and let the coolness through."],
+  ["Mum fanned herself with the electricity bill.",
+   "My sister lay flat on the kitchen tiles.",
+   "Old Mr Kostas sat out on his front step",
+   "with his eyes on the south, not saying a word."],
+  ["Then the trees heard something.",
+   "Every leaf on the gum across the road",
+   "turned over to show its paler side,",
+   "the way a crowd turns round when someone calls a name."],
+  ["It came up the street like a running boy,",
+   "slamming the gates and rattling the bins,",
+   "snatching the washing off the line",
+   "and flinging it, laughing, over the fence."],
+  ["Mr Kostas stood. He took off his hat",
+   "and held it out, the way you’d hold a bowl for rain.",
+   "“There she is,” he said, to no one in particular.",
+   "And the whole street breathed out."]
+];
+
+const PASSAGE = {
+  title: "Southerly Buster",
+  note: "Read the poem below, then answer the questions.",
+  html: `<div class="poem">${POEM_VERSES.map((v, i) =>
+    `<div class="stanza"><span class="vn">${i + 1}</span>${v.map(l => `<span class="line">${l}</span>`).join("")}</div>`).join("")}</div>`
+};
+
+/* ---- Thinking Skills Q1: a block rolled along a table ---- */
+const BLOCK_FACE = `
+  <rect x="-30" y="-45" width="60" height="90" rx="5" fill="#f6ecd6" stroke="${INK}" stroke-width="2"/>
+  <path d="M-15 -39 L-6 -28 L-12 -28 L-12 -17 L-18 -17 L-18 -28 L-24 -28 Z" fill="${INK}"/>
+  <path d="M15 -19 C4 -26 6 -38 15 -32 C24 -38 26 -26 15 -19 Z" fill="#c9485b"/>
+  <circle cx="15" cy="28" r="7.5" fill="#3f7fbf"/>
+  <rect x="-23" y="25.5" width="16" height="5" fill="#3c8d5a"/><rect x="-17.5" y="20" width="5" height="16" fill="#3c8d5a"/>`;
+// quarterTurns = clockwise quarter turns; flip = mirror top-to-bottom after turning (a position rolling can never give)
+function blockAt(cx, cy, quarterTurns, flip, scale = 1) {
+  return `<g transform="translate(${cx} ${cy}) scale(${scale})${flip ? " scale(1 -1)" : ""} rotate(${90 * quarterTurns})">${BLOCK_FACE}</g>`;
+}
+const ROLL_SVG = (() => {
+  const gy = 128;
+  const dash = (x, y, w, h) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="5" fill="none" stroke="${INK}" stroke-width="1.6" stroke-dasharray="5 4"/>`;
+  const arrow = (x1, y1, x2, y2) => {
+    const mx = (x1 + x2) / 2, my = Math.min(y1, y2) - 20;
+    const ang = Math.atan2(y2 - my, x2 - mx), L = 9;
+    const h1 = [x2 - L * Math.cos(ang - 0.45), y2 - L * Math.sin(ang - 0.45)];
+    const h2 = [x2 - L * Math.cos(ang + 0.45), y2 - L * Math.sin(ang + 0.45)];
+    return `<path d="M${x1} ${y1} Q${mx} ${my} ${x2} ${y2}" fill="none" stroke="${INK}" stroke-width="2"/>
+            <path d="M${h1[0]} ${h1[1]} L${x2} ${y2} L${h2[0]} ${h2[1]}" fill="none" stroke="${INK}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`;
+  };
+  return `<svg viewBox="-4 0 350 136" width="350" height="136" role="img" aria-label="A block standing upright with a sticker in each corner of its front face, then dashed outlines showing it lying down, standing up and lying down again as it rolls to the right">
+    <line x1="0" y1="${gy}" x2="342" y2="${gy}" stroke="${INK}" stroke-width="2"/>
+    ${blockAt(40, gy - 45, 0, false)}
+    ${dash(78, gy - 60, 90, 60)}${dash(176, gy - 90, 60, 90)}${dash(244, gy - 60, 90, 60)}
+    ${arrow(46, 32, 112, 62)}${arrow(134, 62, 200, 32)}${arrow(212, 32, 278, 62)}
+  </svg>`;
+})();
+const rollOpt = (k, flip) => `<svg viewBox="-52 -52 104 104" width="104" height="104">${blockAt(0, 0, k, flip, 0.95)}</svg>`;
+
+/* ---- Thinking Skills Q2: number circles ---- */
+const NUM_CIRCLES = (() => {
+  const R = 58;
+  const txt = (x, y, t) => `<text x="${x}" y="${y}" font-size="21" font-weight="700" text-anchor="middle" fill="${INK}">${t}</text>`;
+  const circle = (cx, cy, tl, tr, b) => `
+    <path d="M${cx - R} ${cy} A${R} ${R} 0 0 1 ${cx} ${cy - R} L${cx} ${cy} Z" fill="#f4ebc8"/>
+    <path d="M${cx} ${cy - R} A${R} ${R} 0 0 1 ${cx + R} ${cy} L${cx} ${cy} Z" fill="#f4ebc8"/>
+    <path d="M${cx + R} ${cy} A${R} ${R} 0 0 1 ${cx - R} ${cy} Z" fill="#cfe3c8"/>
+    <circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${INK}" stroke-width="2"/>
+    <line x1="${cx - R}" y1="${cy}" x2="${cx + R}" y2="${cy}" stroke="${INK}" stroke-width="1.6"/>
+    <line x1="${cx}" y1="${cy - R}" x2="${cx}" y2="${cy}" stroke="${INK}" stroke-width="1.6"/>
+    ${txt(cx - 25, cy - 16, tl)}${txt(cx + 25, cy - 16, tr)}${txt(cx, cy + 34, b)}`;
+  return `<svg viewBox="0 0 420 136" width="420" height="136" role="img" aria-label="Three circles. First: 36, 7 and 42. Second: 49, 3 and 21. Third: 16, 9 and a question mark.">
+    ${circle(66, 68, 36, 7, 42)}${circle(210, 68, 49, 3, 21)}${circle(354, 68, 16, 9, "?")}</svg>`;
+})();
+
+/* ---- Maths Q2: a stack of cubes ---- */
+const CUBE_HEIGHTS = [[3, 3, 2], [3, 2, 1], [2, 1, 1]];   // column heights, back corner first
+const CUBES_SVG = (() => {
+  const a = 40, c = Math.cos(Math.PI / 6) * a, s = 0.5 * a;
+  const P = (x, y, z) => [(x - y) * c, (x + y) * s - z * a];
+  const cubes = [];
+  CUBE_HEIGHTS.forEach((row, i) => row.forEach((hgt, j) => { for (let z = 0; z < hgt; z++) cubes.push([i, j, z]); }));
+  cubes.sort((p, q) => (p[0] + p[1] + p[2]) - (q[0] + q[1] + q[2]));
+  const poly = (pts, fill) => `<polygon points="${pts.map(p => P(...p).map(v => v.toFixed(2)).join(",")).join(" ")}" fill="${fill}" stroke="${INK}" stroke-width="1.4" stroke-linejoin="round"/>`;
+  let g = "";
+  cubes.forEach(([i, j, z]) => {
+    g += poly([[i, j, z + 1], [i + 1, j, z + 1], [i + 1, j + 1, z + 1], [i, j + 1, z + 1]], "#eef2f8");
+    g += poly([[i + 1, j, z], [i + 1, j + 1, z], [i + 1, j + 1, z + 1], [i + 1, j, z + 1]], "#c9d4e3");
+    g += poly([[i, j + 1, z], [i + 1, j + 1, z], [i + 1, j + 1, z + 1], [i, j + 1, z + 1]], "#a9b6c9");
+  });
+  const w = 6 * c + 8, h = 6 * a + 8;
+  return `<svg viewBox="${-3 * c - 4} ${-3 * a - 4} ${w} ${h}" width="${w.toFixed(0)}" height="${h.toFixed(0)}" role="img" aria-label="A shape made of small cubes stacked in nine columns, tallest at the back and shortest at the front">${g}</svg>`;
+})();
+
+/* ---- Maths Q3: price tags ---- */
+const PRICE_TAGS = `<div class="tags">${[["book", "$12.40"], ["pen", "$4.85"], ["torch", "$7.60"]]
+  .map(([item, price]) => `<div class="tag"><small>${item}</small><span>${price}</span></div>`).join("")}</div>`;
+
+const SECTIONS = [
+  {
+    id: "reading",
+    name: "Reading",
+    passage: PASSAGE,
+    intro: "Read the poem, then choose the option (A, B, C or D) which you think best answers each question.",
+    questions: [
+      {
+        stem: "In verse 4, the leaves turning over are compared to a crowd turning round when someone calls a name. This suggests that the leaves",
+        options: ["are torn off the tree one at a time.",
+                  "are too dry and heavy to move.",
+                  "all turn at the same moment, as if they have noticed something.",
+                  "make a noise like people shouting."],
+        answer: 2,
+        skill: "working out what a comparison suggests",
+        explain: `<p>When someone calls a name in a crowd, everyone turns round at once, towards the sound. The poet uses this to show every leaf on the gum flipping over together, at the very moment “the trees heard something”. The comparison is about the whole tree reacting at once, as if it has noticed the wind coming.</p>
+                  <p class="why-not">B describes the heat earlier in the poem (“too heavy to shift”), but in verse 4 the leaves are moving. A mixes up the leaves with the washing, which is snatched away in verse 5. D is wrong because the comparison is about turning round, not noise. The noise comes later, with slamming gates and rattling bins.</p>`
+      },
+      {
+        stem: "The poem suggests that Mr Kostas",
+        options: ["is annoyed by the noise the cicadas are making.",
+                  "has been waiting for the cool change all afternoon.",
+                  "is worried that the wind will damage his house.",
+                  "does not like talking to his neighbours."],
+        answer: 1,
+        skill: "inferring a character’s feelings from clues",
+        explain: `<p>Mr Kostas sits “with his eyes on the south”, which is the direction a southerly comes from. When the wind arrives he stands, takes off his hat and holds it out “the way you’d hold a bowl for rain”, and says “There she is”, like someone greeting a thing they have been expecting.</p>
+                  <p class="why-not">D is the trap. He is “not saying a word” and speaks “to no one in particular”, but that shows he is quietly watching, not that he dislikes his neighbours. The poem never says so. C doesn’t fit a man who holds his hat out to welcome the wind, and nothing in the poem links him to the cicadas (A).</p>`
+      },
+      {
+        stem: `<p class="note">For this question, you will need to refer back to the whole poem.</p>Which of these best describes how the mood of the poem changes?`,
+        options: ["from peaceful to frightening",
+                  "from cheerful to disappointed",
+                  "from bored to annoyed",
+                  "from tired and heavy to lively and relieved"],
+        answer: 3,
+        skill: "tracking how the mood changes across the whole poem",
+        explain: `<p>The first three verses are slow and heavy: the heat lies on the street “too heavy to shift”, the tar goes soft and people lie flat or sit still. From verse 4 everything moves. The leaves turn, and the wind races up the street “like a running boy”, laughing. The poem ends with “the whole street breathed out”, a sigh of relief.</p>
+                  <p class="why-not">A is the trap. Slamming gates, rattling bins and snatched washing could sound frightening, but the wind is “laughing” like a playful boy, and people welcome it rather than fear it. C (annoyed) has the same problem, and nothing at the start is cheerful (B). In a question about how the mood changes, both halves of the answer must fit.</p>`
+      }
+    ]
+  },
+  {
+    id: "thinking",
+    name: "Thinking Skills",
+    intro: "Choose the one correct answer (A, B, C or D).",
+    questions: [
+      {
+        stem: `Sam has a rectangular block with a sticker in each corner of its front face. He stands the block on a table and tips it over to the right, again and again, so that it rolls along the table with one side at a time touching the table. The front face always stays facing Sam.
+               <div class="figure">${ROLL_SVG}</div>
+               <p style="margin:0">Which one of these positions is <b>not</b> possible?</p>`,
+        visualOptions: true,
+        options: [rollOpt(1, true), rollOpt(1, false), rollOpt(2, false), rollOpt(3, false)],
+        answer: 0,
+        skill: "telling a turn from a flip",
+        explain: `<p>Each time the block tips over to the right, its front face makes a quarter turn clockwise. Every position is just the starting face turned round, and turning never changes the order of the stickers as you go clockwise round the corners: arrow, heart, circle, plus. In A, going clockwise from the arrow gives arrow, plus, circle, heart. The order is reversed, so A is a mirror image. Rolling can turn the face, but it can never flip it over like that.</p>
+                  <p class="why-not">B is the block after one roll (a quarter turn), C after two rolls (a half turn, so the arrow points down), and D after three (the arrow points left). A is the trap: its arrow points right, exactly as it does after the first roll, so it looks correct until you check the order of the corners.</p>`
+      },
+      {
+        stem: `The numbers in each circle follow the same rule.
+               <div class="figure">${NUM_CIRCLES}</div>
+               <p style="margin:0">What is the missing number?</p>`,
+        options: ["13", "25", "36", "144"],
+        answer: 2,
+        skill: "finding a hidden number rule",
+        explain: `<p>Look for a link between the top-left number and the bottom number. 36 is 6 × 6, and the bottom number is 6 × 7 = 42. 49 is 7 × 7, and the bottom number is 7 × 3 = 21. So the rule is: find the number that multiplies by itself to make the top-left number, then multiply it by the top-right number. For the last circle, 16 is 4 × 4, and 4 × 9 = 36.</p>
+                  <p class="why-not">25 adds the two top numbers (16 + 9), and 144 multiplies them (16 × 9). Neither rule works for the first two circles, so always test a rule on every circle before using it. 13 finds the 4 correctly but then adds 9 instead of multiplying.</p>`
+      },
+      {
+        stem: `Jamal’s book about Australian birds says that the powerful owl is the only Australian owl that hunts possums.
+               <p style="margin:10px 0 0">On a bushwalk, Jamal finds a clump of possum fur at the foot of a tall gum tree.</p>
+               <p class="quote"><em class="speaker">Jamal:</em> “A powerful owl must have caught a possum here!”</p>
+               <p style="margin:10px 0 0">Which one of the following sentences shows the mistake Jamal has made?</p>`,
+        options: ["Powerful owls also hunt birds and flying foxes.",
+                  "Animals that are not owls may also hunt possums.",
+                  "Powerful owls are the largest owls in Australia.",
+                  "Possums usually come out only at night."],
+        answer: 1,
+        skill: "spotting the mistake in an argument",
+        explain: `<p>The book says the powerful owl is the only <em>owl</em> that hunts possums, not that it is the only <em>animal</em> that does. A fox, a python or a cat could have caught this possum, so the fur doesn’t prove an owl was there. Jamal has treated “the only owl” as if it meant “the only animal”, and B points this out.</p>
+                  <p class="why-not">A, C and D may all be true, but none of them gives another way the fur could have got there, so none of them shows a mistake in Jamal’s reasoning. An answer to this kind of question has to explain why the conclusion doesn’t follow.</p>`
+      }
+    ]
+  },
+  {
+    id: "maths",
+    name: "Mathematical Reasoning",
+    intro: "Choose the one correct answer (A, B, C, D or E). No calculators.",
+    questions: [
+      {
+        stem: `A school sports carnival starts at 9:20 am and finishes at 11:50 am.
+               <p style="margin:10px 0 0">Through how many degrees does the hour hand of the school clock turn during the carnival?</p>`,
+        options: ["60°", "75°", "90°", "150°", "900°"],
+        answer: 1,
+        skill: "angles on a clock: how far the hour hand turns",
+        explain: `<p>The hour hand goes all the way round (360°) in 12 hours, so it turns 360° ÷ 12 = 30° every hour, and 15° every half hour. From 9:20 am to 11:50 am is 2 hours 30 minutes, so the hour hand turns 30° + 30° + 15° = 75°.</p>
+                  <p class="why-not">60° (A) counts only the 2 whole hours. 90° (C) rounds 11:50 up to 12 o’clock and counts 3 hours. 150° (D) gives 30° to every half hour instead of every hour. 900° (E) is how far the <em>minute</em> hand turns: two and a half full turns.</p>`
+      },
+      {
+        stem: `Jack has built this shape from small cubes. Each cube sits either on the table or on top of another cube.
+               <div class="figure">${CUBES_SVG}</div>
+               <p style="margin:0">How many <b>more</b> small cubes does Jack need to turn his shape into a large cube that is 3 cubes long, 3 cubes wide and 3 cubes high?</p>`,
+        options: ["9", "11", "16", "18", "27"],
+        answer: 0,
+        skill: "counting hidden cubes in a 3D shape",
+        explain: `<p>Count the cubes one column at a time, using the top of each column. There are nine columns. The back corner column is 3 cubes high, and so are the two columns next to it. The three columns across the middle are 2 high. The two columns next to the front corner are 1 high, and so is the front corner column itself. That makes 3 + 3 + 3 + 2 + 2 + 2 + 1 + 1 + 1 = 18 cubes. A 3 × 3 × 3 cube needs 27 cubes, so Jack needs 27 − 18 = 9 more.</p>
+                  <p class="why-not">16 (C) comes from counting only the 11 cubes you can see (B). The 7 hidden cubes must be there, because every cube sits on the table or on another cube. 18 (D) is how many cubes Jack already has, and 27 (E) is how many the finished cube needs.</p>`
+      },
+      {
+        stem: `Mia has $30. She wants to buy these three things:
+               ${PRICE_TAGS}
+               <p style="margin:0">To estimate the total cost, she rounds each price to the nearest dollar and then adds the rounded amounts.</p>
+               <p style="margin:10px 0 0">How much change does she estimate she will get?</p>`,
+        options: ["$4", "$5", "$5.15", "$7", "$25"],
+        answer: 1,
+        skill: "estimating by rounding money",
+        explain: `<p>Round each price to the nearest dollar. $12.40 rounds down to $12, because 40 cents is less than 50 cents. $4.85 rounds up to $5, and $7.60 rounds up to $8. The estimated total is $12 + $5 + $8 = $25, so the estimated change from $30 is $5.</p>
+                  <p class="why-not">$5.15 (C) is the exact change ($30 − $24.85), not the estimate the question asks for. $4 (A) rounds every price up, including $12.40. $7 (D) just drops the cents: $12 + $4 + $7 = $23. $25 (E) is the estimated cost, not the change.</p>`
+      }
+    ]
+  }
+];
+
+
+const LETTERS = ["A", "B", "C", "D", "E"];
+const app = document.getElementById("app");
+const hdrSection = document.getElementById("hdr-section");
+let responses = SECTIONS.map(s => s.questions.map(() => null));
+let current = 0;
+
+function showStart() {
+  hdrSection.textContent = "";
+  app.innerHTML = `
+    <div class="sheet instructions">
+      <h1>Practice paper 9</h1>
+      <p class="lead">Three short sections: reading, thinking skills and maths.</p>
+      <div class="plan">
+        ${SECTIONS.map(s => `<div><strong>${s.name}</strong><span>${s.questions.length} questions</span></div>`).join("")}
+      </div>
+      <ol>
+        <li>Take as long as you need — there is no time limit.</li>
+        <li>Answer all three questions in a section, then press <strong>Submit answers</strong> to see how you went.</li>
+        <li>You don’t lose marks for wrong answers, so attempt every question.</li>
+        <li>Your overall mark out of 9 is shown at the end.</li>
+      </ol>
+      <button class="primary" id="start">Start the reading section</button>
+    </div>`;
+  document.getElementById("start").onclick = () => { current = 0; responses = SECTIONS.map(s => s.questions.map(() => null)); showSection(); };
+}
+
+function renderPassage(pass) {
+  return `<div class="passage">
+    <p class="passage-note">${pass.note}</p>
+    <div class="prose"><h3>${pass.title}</h3><div id="passage-body">${typeof pass.html === "function" ? pass.html() : pass.html}</div></div>
+  </div>`;
+}
+
+function refreshPassage() {
+  const pass = SECTIONS[current].passage;
+  const el = document.getElementById("passage-body");
+  if (el && pass && typeof pass.html === "function") el.innerHTML = pass.html();
+}
+
+function renderQuestions(section, mode) {
+  return section.questions.map((q, qi) => {
+    const chosen = responses[current][qi];
+    const opts = q.options.map((o, oi) => {
+      let cls = "option";
+      if (mode === "answer" && chosen === oi) cls += " selected";
+      if (mode === "review") {
+        if (oi === q.answer) cls += " is-correct";
+        else if (chosen === oi) cls += " is-wrong";
+      }
+      return `<button type="button" class="${cls}" data-q="${qi}" data-o="${oi}" ${mode === "review" ? "disabled" : ""}>
+                <span class="letter">${LETTERS[oi]}</span>${q.letterOptions ? "" : `<span>${o}</span>`}</button>`;
+    }).join("");
+    const optCls = q.visualOptions ? "options visual" : (q.letterOptions ? "options letters" : "options");
+    let result = "";
+    if (mode === "review") {
+      const right = chosen === q.answer;
+      const label = chosen === null ? "Not answered" : (right ? "Correct" : "Incorrect");
+      result = `<div class="result-line"><span class="badge ${right ? "ok" : "no"}">${label}</span>
+                <span>Correct answer: ${LETTERS[q.answer]}${chosen !== null && !right ? ` · You chose ${LETTERS[chosen]}` : ""}</span></div>`;
+    }
+    return `<div class="question">
+      <div class="qhead"><span class="qnum">${qi + 1}</span><div class="stem">${q.stem}</div></div>
+      ${result}
+      <div class="${optCls}">${opts}</div>
+      ${mode === "review" ? `<div class="explain">${q.skill ? `<p class="skill">Skill tested: ${q.skill}</p>` : ""}${q.explain}</div>` : ""}
+    </div>`;
+  }).join("");
+}
+
+function showSection() {
+  passMode = "answer";
+  const s = SECTIONS[current];
+  hdrSection.textContent = `${s.name} · Section ${current + 1} of ${SECTIONS.length}`;
+  const qs = `<div>
+      <h2>${s.name}</h2>
+      <p class="lead">${s.intro}</p>
+      ${s.preamble || ""}
+      ${renderQuestions(s, "answer")}
+      <div class="submit-row">
+        <button class="primary" id="submit">Submit answers</button>
+        <span class="status" id="status"></span>
+      </div>
+    </div>`;
+  app.innerHTML = `<div class="sheet">${s.passage ? `<div class="two-col">${renderPassage(s.passage)}${qs}</div>` : qs}</div>`;
+
+  app.querySelectorAll(".option").forEach(btn => {
+    btn.onclick = () => {
+      const qi = +btn.dataset.q, oi = +btn.dataset.o;
+      responses[current][qi] = oi;
+      app.querySelectorAll(`.option[data-q="${qi}"]`).forEach(b => b.classList.toggle("selected", +b.dataset.o === oi));
+      refreshPassage();
+      updateStatus();
+    };
+  });
+  document.getElementById("submit").onclick = () => {
+    const unanswered = responses[current].filter(r => r === null).length;
+    if (unanswered && !confirm(`You have ${unanswered} unanswered question${unanswered > 1 ? "s" : ""}. Submit anyway?`)) return;
+    showReview();
+  };
+  updateStatus();
+  window.scrollTo(0, 0);
+}
+
+function updateStatus() {
+  const done = responses[current].filter(r => r !== null).length;
+  const el = document.getElementById("status");
+  if (el) el.textContent = `${done} of ${SECTIONS[current].questions.length} answered`;
+}
+
+function sectionScore(i) {
+  return SECTIONS[i].questions.reduce((n, q, qi) => n + (responses[i][qi] === q.answer ? 1 : 0), 0);
+}
+
+function showReview() {
+  passMode = "review";
+  const s = SECTIONS[current];
+  const score = sectionScore(current);
+  const last = current === SECTIONS.length - 1;
+  hdrSection.textContent = `${s.name} · Review`;
+  const body = `<div>
+      <h2>${s.name} — review</h2>
+      <p class="section-score">You scored <b>${score}</b> out of ${s.questions.length}</p>
+      ${s.preamble || ""}
+      ${renderQuestions(s, "review")}
+      <div class="submit-row">
+        <button class="primary" id="next">${last ? "See your overall mark" : `Start the ${SECTIONS[current + 1].name.split(" — ")[0].toLowerCase()} section`}</button>
+      </div>
+    </div>`;
+  app.innerHTML = `<div class="sheet">${s.passage ? `<div class="two-col">${renderPassage(s.passage)}${body}</div>` : body}</div>`;
+  document.getElementById("next").onclick = () => { if (last) showFinal(); else { current++; showSection(); } };
+  window.scrollTo(0, 0);
+}
+
+function showFinal() {
+  hdrSection.textContent = "Results";
+  const total = SECTIONS.reduce((n, _, i) => n + sectionScore(i), 0);
+  const max = SECTIONS.reduce((n, s) => n + s.questions.length, 0);
+  let verdict;
+  if (total === max) verdict = "Full marks. Every question right, across all three sections.";
+  else if (total >= 7) verdict = "A strong result. Look back at the questions you missed — the explanations show exactly where the trap was.";
+  else if (total >= 5) verdict = "A solid attempt. The sections where you dropped marks are the ones to practise next.";
+  else verdict = "A good start. Re-read the explanations for each section, then try the paper again.";
+  app.innerHTML = `
+    <div class="sheet">
+      <div class="final-score"><div class="big">${total}</div><div class="of">out of ${max}</div></div>
+      <div class="breakdown">
+        ${SECTIONS.map((s, i) => `<div><strong>${sectionScore(i)} / ${s.questions.length}</strong><span>${s.name}</span></div>`).join("")}
+      </div>
+      <p class="verdict center">${verdict}</p>
+      <div class="center"><button class="primary" id="again">Try the paper again</button></div>
+    </div>`;
+  document.getElementById("again").onclick = showStart;
+  window.scrollTo(0, 0);
+}
+
+
+showStart();
+</script>
+</body>
+</html>
